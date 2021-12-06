@@ -4,8 +4,11 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-sin = 0.01745240643728351281941898
-sin2 = 0.00007615242180438042149422
+from numpy import cross, dot, eye
+from scipy.linalg import expm, norm
+
+import numpy as np
+import math
 
 vertices = (
     (1, -1, -1),
@@ -33,6 +36,20 @@ edges = (
     (5,7),
     )
 
+theta = 2 * np.pi / 360
+
+
+def M(axis, direction):
+    axis = np.asarray(axis)
+    axis = direction * axis / math.sqrt(np.dot(axis, axis))
+    a = math.cos(theta / 2.0)
+    b, c, d = -axis * math.sin(theta / 2.0)
+    aa, bb, cc, dd = a * a, b * b, c * c, d * d
+    bc, ad, ac, ab, bd, cd = b * c, a * d, a * c, a * b, b * d, c * d
+    return np.array([[aa + bb - cc - dd, 2 * (bc + ad), 2 * (bd - ac)],
+                     [2 * (bc - ad), aa + cc - bb - dd, 2 * (cd + ab)],
+                     [2 * (bd + ac), 2 * (cd - ab), aa + dd - bb - cc]])
+
 
 def Cube():
     glBegin(GL_LINES)
@@ -53,8 +70,8 @@ def main():
     
     glRotate(0, 0, 0, 0)
     
-    turn = (0,1,0)
-    roll = (1,0,0)
+    turn = [0,1,0]
+    roll = [1,0,0]
     
     while True:
         for event in pygame.event.get():
@@ -65,40 +82,20 @@ def main():
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_LEFT]:
             x, y, z = turn
-            glRotate(1, x, y, z)
-            a, b, c = roll
-            roll = (
-                (4*sin2*(-y*y -z*z)+1)*a + (4*x*y*sin2-z*sin)*b + (4*x*y*sin2+y*sin)*c,
-                (4*x*y*sin2+z*sin)*a + (4*sin2*(-x*x -z*z)+1)*b + (4*y*z*sin2-x*sin)*c,
-                (4*x*z*sin2-y*sin)*a + (4*y*z*sin2+x*sin)*b + (4*sin2*(-x*x -y*y)+1)*c
-                )
+            glRotate(-1, x, y, z)
+            roll = dot(M(turn, 1),roll)
         if pressed[pygame.K_RIGHT]:
             x, y, z = turn
-            glRotate(-1, x, y, z)
-            a, b, c = roll
-            roll = (
-                (4*sin2*(-y*y -z*z)+1)*a + (4*x*y*sin2+z*sin)*b + (4*x*y*sin2-y*sin)*c,
-                (4*x*y*sin2-z*sin)*a + (4*sin2*(-x*x -z*z)+1)*b + (4*y*z*sin2+x*sin)*c,
-                (4*x*z*sin2+y*sin)*a + (4*y*z*sin2-x*sin)*b + (4*sin2*(-x*x -y*y)+1)*c
-                )
+            glRotate(1, x, y, z)
+            roll = dot(M(turn, -1),roll)
         if pressed[pygame.K_DOWN]:
             x, y, z = roll
             glRotate(1, x, y, z)
-            a, b, c = turn
-            turn = (
-                (4*sin2*(-y*y -z*z)+1)*a + (4*x*y*sin2+z*sin)*b + (4*x*y*sin2-y*sin)*c,
-                (4*x*y*sin2-z*sin)*a + (4*sin2*(-x*x -z*z)+1)*b + (4*y*z*sin2+x*sin)*c,
-                (4*x*z*sin2+y*sin)*a + (4*y*z*sin2-x*sin)*b + (4*sin2*(-x*x -y*y)+1)*c
-                )
+            turn = dot(M(roll, -1),turn)
         if pressed[pygame.K_UP]:
             x, y, z = roll
             glRotate(-1, x, y, z)
-            a, b, c = turn
-            turn = (
-                (4*sin2*(-y*y -z*z)+1)*a + (4*x*y*sin2-z*sin)*b + (4*x*y*sin2+y*sin)*c,
-                (4*x*y*sin2+z*sin)*a + (4*sin2*(-x*x -z*z)+1)*b + (4*y*z*sin2-x*sin)*c,
-                (4*x*z*sin2-y*sin)*a + (4*y*z*sin2+x*sin)*b + (4*sin2*(-x*x -y*y)+1)*c
-                )
+            turn = dot(M(roll, 1),turn)
         
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
         Cube()
@@ -106,5 +103,5 @@ def main():
         pygame.time.wait(10)
         
 
-main()
-        
+if __name__ == "__main__":
+    main()        
