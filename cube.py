@@ -1,14 +1,19 @@
 import pygame
-from pygame.locals import *
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
+from pygame.locals import *
+
 from numpy import cross, dot, eye
 from scipy.linalg import expm, norm
 
+from obj import *
+
 import numpy as np
 import math
+
+from os import sys
 
 vertices = (
     (1, -1, -1),
@@ -19,22 +24,22 @@ vertices = (
     (1, 1, 1),
     (-1, -1, 1),
     (-1, 1, 1),
-    )
+)
 
 edges = (
-    (0,1),
-    (0,3),
-    (0,4),
-    (2,1),
-    (2,3),
-    (2,7),
-    (6,3),
-    (6,4),
-    (6,7),
-    (5,1),
-    (5,4),
-    (5,7),
-    )
+    (0, 1),
+    (0, 3),
+    (0, 4),
+    (2, 1),
+    (2, 3),
+    (2, 7),
+    (6, 3),
+    (6, 4),
+    (6, 7),
+    (5, 1),
+    (5, 4),
+    (5, 7),
+)
 
 theta = 2 * np.pi / 360
 
@@ -57,51 +62,55 @@ def Cube():
         for vertex in edge:
             glVertex3fv(vertices[vertex])
     glEnd()
-    
+
 
 def main():
     pygame.init()
-    display = (800,600)
-    pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
-    
-    gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
-    
+    display = (800, 600)
+    pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
+
+    gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
+
     glTranslatef(0.0, 0.0, -5)
-    
+
     glRotate(0, 0, 0, 0)
-    
-    turn = [0,1,0]
-    roll = [1,0,0]
-    
+
+    turn = [0, 1, 0]
+    roll = [1, 0, 0]
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                quit()
-        
+                sys.exit()
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_LEFT]:
             x, y, z = turn
             glRotate(-1, x, y, z)
-            roll = dot(M(turn, 1),roll)
+            roll = dot(M(turn, 1), roll)
         if pressed[pygame.K_RIGHT]:
             x, y, z = turn
             glRotate(1, x, y, z)
-            roll = dot(M(turn, -1),roll)
+            roll = dot(M(turn, -1), roll)
         if pressed[pygame.K_DOWN]:
             x, y, z = roll
             glRotate(1, x, y, z)
-            turn = dot(M(roll, -1),turn)
+            turn = dot(M(roll, -1), turn)
         if pressed[pygame.K_UP]:
             x, y, z = roll
             glRotate(-1, x, y, z)
-            turn = dot(M(roll, 1),turn)
-        
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+            turn = dot(M(roll, 1), turn)
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         Cube()
         pygame.display.flip()
         pygame.time.wait(10)
-        
+
 
 if __name__ == "__main__":
-    main()        
+    main()
