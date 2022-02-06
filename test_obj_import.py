@@ -1,4 +1,5 @@
 import sys
+import os
 
 from OpenGL.GLU import *
 from pygame.constants import *
@@ -21,7 +22,7 @@ glEnable(GL_DEPTH_TEST)
 glShadeModel(GL_FLAT)  # most obj files expect to be smooth-shaded
 
 # LOAD OBJECT AFTER PYGAME INIT
-obj = OBJ('sphere2.obj')
+obj = OBJ(os.getcwd() + '/surfaces/monkey.obj')
 
 clock = pygame.time.Clock()
 

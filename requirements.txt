@@ -2,5 +2,4 @@ pygame~=2.1.2
 PyOpenGL
 wolframclient
 scipy~=1.7.3
-
 numpy~=1.22.0
