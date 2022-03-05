@@ -25,7 +25,7 @@ def move(position, velocity):
 
     travel_path['vertices'].append(destination)  # add destination to end of path
 
-    if step < 100:  # add new <VERTEX INDICES> = <EDGE> if short enough path
+    if step < 500:  # add new <VERTEX INDICES> = <EDGE> if short enough path
         travel_path['edges'].append((step, step + 1))
     else:  # remove oldest positional vertex
         travel_path['vertices'].pop(0)
