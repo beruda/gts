@@ -2,8 +2,13 @@
 # master's thesis -> Geodesic Travel Simulator
 # test_pathfinder.py -> pathfinder testing program + GTS for plane travel
 
-from cube import *
-from pathfinder import *
+from gts.test.cube import *
+from gts.pathfinder.mogoi import *
+
+import gts.šlog as šlog
+
+
+logger = šlog.configure(__name__)
 
 # tangent_1, tangent_2, tangent_3 = (1.0, 0.0, 0.0)
 # speed = 0.1
@@ -11,34 +16,42 @@ from pathfinder import *
 # position = (0, 0, 0)
 
 
-def main():
+def main_test_pathfinder():
+    logger.info("initializing pygame window")
     pygame.init()
     display = (1280, 960)
 
+    logger.info("setting pygame window dimensions")
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
 
+    logger.info("setting camera")
     gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
     glTranslatef(0.0, 0.0, -5.0)
     glRotate(0, 0, 0, 0)
 
+    logger.info("setting starting direction")
     tangent_1, tangent_2, tangent_3 = (1.0 / np.sqrt(2),
                                        1.0 / np.sqrt(2),
                                        0.0)
+
     speed = 0.003
-    turn_speed = 0.0001
+    turn_speed = 0.0002
     normal_1, normal_2, normal_3 = (0.0, 0.0, 1.0)
     position = (0, 0, 0)
 
+    logger.info("releasing snake...")
     while True:
         # exit logic
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                logger.info('exiting')
                 pygame.quit()
-                exit()
+                return
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
+                    logger.info("exiting")
                     pygame.quit()
-                    exit()
+                    return
 
         # acceleration reset for each tick
         acceleration_1, acceleration_2, acceleration_3 = (0.0, 0.0, 0.0)
@@ -78,8 +91,4 @@ def main():
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         draw_travel_path()
         pygame.display.flip()
-        pygame.time.wait(10)
-
-
-if __name__ == "__main__":
-    main()
+        pygame.time.wait(3)
