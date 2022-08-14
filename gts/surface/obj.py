@@ -43,6 +43,7 @@ class OBJ:
         self.normals = []
         self.tex_coords = []
         self.faces = []
+        self.contours = []
 
         material = None
         for line in open(filename, "r"):
@@ -66,7 +67,7 @@ class OBJ:
             elif values[0] in ('usemtl', 'usemat'):
                 material = values[1]
             elif values[0] == 'mtllib':
-                self.mtl = MTL(os.getcwd() + '/surfaces/' + values[1])
+                self.mtl = MTL("surface/surfaces/" + values[1])
             elif values[0] == 'f':
                 face = []
                 tex_coords = []
@@ -83,6 +84,11 @@ class OBJ:
                     else:
                         norms.append(0)
                 self.faces.append((face, norms, tex_coords, material))
+            elif values[0] == 'l':
+                line = []
+                for v in values[1:]:
+                    line.append(int(v))
+                self.contours.append(line)
 
         self.gl_list = glGenLists(1)
         glNewList(self.gl_list, GL_COMPILE)

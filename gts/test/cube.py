@@ -5,7 +5,7 @@
 from OpenGL.GLU import *
 from pygame.locals import *
 from numpy import dot
-from obj import *
+from gts.test.obj import *
 
 import numpy as np
 import math

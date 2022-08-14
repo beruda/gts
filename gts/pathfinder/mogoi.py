@@ -20,7 +20,7 @@ def move(position, velocity):
         position[2] + velocity[2]
     )
 
-    if not step:  # if start = not step = no edges in list
+    if not step:  # if start = if not step = if no edges in list
         travel_path['vertices'].append(position)
 
     travel_path['vertices'].append(destination)  # add destination to end of path
