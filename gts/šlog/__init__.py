@@ -6,7 +6,7 @@ import hashlib
 class _Infarkt(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         level = record.levelname
-        while len(level) < 8:
+        while len(level) < 7:
             level = " " + level
 
         line_number = str(record.lineno)
@@ -17,26 +17,25 @@ class _Infarkt(logging.Formatter):
 
         function_name = record.funcName
         while len(function_name) < 15:
-            function_name += " "
+            if function_name[len(function_name) - 1] != '—':
+                function_name += " "
+                pass
+            function_name += "—"
         if len(function_name) > 15:
-            function_name = function_name[:15]
+            function_name = function_name[:14] + " "
 
-        return (f"[{datetime.now().strftime('%y-%m-%d %H:%M:%S,%f')}] {level} → {name_hash} "
-                f"@l={line_number} @f={function_name} :  {record.msg}")
+        return (f"[{datetime.now().strftime('%H:%M:%S,%f')}] {level} : {name_hash} "
+                f"@l {line_number} @f {function_name}→ {record.msg}")
 
 
 def configure(name: str) -> logging.Logger:
 
     # creating the logfile if it doesn't exist
-    # TODO: remove 'gts/'
     logfile = f"šlog/logs/{str(datetime.now().date())}.log"
-    try:
-        file = open(file=logfile, mode='a')
-        if name == 'gts':
-            file.write("\n")
-        file.close()
-    except FileNotFoundError:
-        open(file=logfile, mode='w+').close()
+    file = open(file=logfile, mode='a')
+    if name == 'gts':
+        file.write("\n")
+    file.close()
 
     # creating the Logger Handler
     handler = logging.FileHandler(
