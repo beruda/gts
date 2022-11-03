@@ -42,7 +42,7 @@ class Parametrization:
                 "parametrization coordinate function domains don't include U×V"
             )
 
-        Parametrization.logger.info("Parametrization loaded successfully")
+        Parametrization.logger.info("Parametrization loaded")
         self.value = parametrization
         self._hash = ''
         self.u = u
@@ -121,7 +121,7 @@ class Builder:
                 # Faces are defined by vertices in a counter-clockwise pattern, like so:
                 #   4 3
                 #   1 2
-        Builder.logger.info(" ├── vertex & face indices built")
+        Builder.logger.info(" ├── vertices & faces indexed")
 
         Builder.session.evaluate(wlexpr(f'x[{{u_,v_}}] = {self.parametrization}'))  # Load surface definition
         Builder.session.evaluate(wlexpr('unitnormal[x_][u_, v_] ='
@@ -151,19 +151,19 @@ class Builder:
         with open(f"surface/surfaces/{self.parametrization.hash()}.obj", mode='w+') as obj_file:
             obj_file.write(f"mtllib mtl.mtl\n")
             obj_file.write('o Cube_Cube.001\n')
-            Builder.logger.info(" ├── .obj file headers written")
+            Builder.logger.debug(" ├── .obj file headers written")
 
             for vertex in vertices:
                 obj_file.write(f'v {vertex[0]:f} {vertex[1]:f} {vertex[2]:f}\n')
-            Builder.logger.info(" ├── vertices written")
+            Builder.logger.debug(" ├── vertices written")
 
             for vn in vertex_normals:
                 obj_file.write(f'vn {(-1 * vn[0]):f} {(-1 * vn[1]):f} {(-1 * vn[2]):f}\n')
-            Builder.logger.info(" ├── vertex normals written")
+            Builder.logger.debug(" ├── vertex normals written")
 
             obj_file.write('usemtl None\n')
             obj_file.write('s off\n')
-            Builder.logger.info(" ├── material written")
+            Builder.logger.debug(" ├── material written")
 
             for face in faces:
                 obj_file.write(
@@ -172,7 +172,7 @@ class Builder:
                     f' {face[2]}//{face[2]}'
                     f' {face[3]}//{face[3]}\n'
                 )
-            Builder.logger.info(" ├── faces written")
+            Builder.logger.debug(" ├── faces written")
 
             for i in range(0, self._divider - 1):
                 obj_file.write('l')
@@ -184,6 +184,6 @@ class Builder:
                 for i in range(j, j + self._divider * (self._divider + 1) + 1, self._divider + 1):
                     obj_file.write(f' {i}')
                 obj_file.write('\n')
-            Builder.logger.info(" ├── lines written")
+            Builder.logger.debug(" ├── lines written")
 
         Builder.logger.info(f" └── {self.parametrization.hash()}.obj built")
