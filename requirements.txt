@@ -1,5 +1,0 @@
-pygame~=2.1.2
-PyOpenGL==3.1.6
-wolframclient
-scipy==1.9.0
-numpy==1.23.2
